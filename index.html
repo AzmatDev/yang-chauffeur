@@ -492,6 +492,17 @@
     color: var(--gold); margin-bottom: 0.8rem;
   }
   .form-success p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
+  .btn-new-resa {
+    background: transparent !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-muted) !important;
+    letter-spacing: 0.15em;
+  }
+  .btn-new-resa:hover {
+    border-color: var(--gold) !important;
+    color: var(--gold) !important;
+    background: transparent !important;
+  }
 
   /* FOOTER */
   footer {
@@ -670,7 +681,7 @@
         <div class="stat-label">Disponibilité</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">4.8★</div>
+        <div class="stat-num">5★</div>
         <div class="stat-label">Note Google</div>
       </div>
       <div class="stat-item">
@@ -820,7 +831,7 @@
           <div class="fleet-small-overlay"><span>Paris & monuments</span></div>
         </div>
         <div class="fleet-small-card">
-          <img src="van_3.jpeg" alt="Mercedes Viano profil Yang Chauffeur">
+          <img src="van_3.jpg" alt="Mercedes Viano profil Yang Chauffeur">
           <div class="fleet-small-overlay"><span>Silhouette & finitions AMG</span></div>
         </div>
       </div>
@@ -868,7 +879,7 @@
       <div class="avis-author">Fred G.</div>
     </div>
     <div class="avis-card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:rgba(201,169,110,0.04);">
-      <div style="font-family:'Cormorant Garamond',serif; font-size:2.5rem; font-weight:300; color:var(--gold); margin-bottom:0.5rem;">4.8</div>
+      <div style="font-family:'Cormorant Garamond',serif; font-size:2.5rem; font-weight:300; color:var(--gold); margin-bottom:0.5rem;">5.0</div>
       <div class="stars" style="font-size:1rem; letter-spacing:0.2em;">★★★★★</div>
       <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Note Google</div>
       <a href="tel:0669029438" class="btn-primary" style="margin-top:1.5rem; font-size:0.65rem;">Réserver maintenant</a>
@@ -1082,15 +1093,10 @@
 
       /* Pré-remplir le message uniquement si vide */
       const textarea = document.getElementById('message');
-      if (textarea && messageValue) {
-  const isAutoFilled = textarea.dataset.auto === "true";
-
-  if (textarea.value.trim() === '' || isAutoFilled) {
-    textarea.value = messageValue;
-    textarea.dataset.auto = "true";
-    flashField(textarea);
-  }
-}
+      if (textarea && messageValue && textarea.value.trim() === '') {
+        textarea.value = messageValue;
+        flashField(textarea);
+      }
 
       /* Scroll vers le formulaire */
       document.getElementById('reservation').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1105,7 +1111,7 @@
     setTimeout(() => el.classList.remove('field-flash'), 1400);
   }
 
-  /* ── Soumission formulaire → WhatsApp ── */
+  /* ── Soumission formulaire → WhatsApp + Email ── */
   function submitForm() {
     const prenom  = document.getElementById('prenom').value.trim();
     const nom     = document.getElementById('nom').value.trim();
@@ -1127,28 +1133,68 @@
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    // EMAIL
-const subject = encodeURIComponent("Nouvelle réservation Yang Chauffeur");
+    /* Texte commun */
+    const texte =
+      `Nouvelle réservation Yang Chauffeur\n\n` +
+      `Client : ${prenom} ${nom}\n` +
+      `Tél : ${tel}${email ? '\nEmail : ' + email : ''}\n` +
+      `Service : ${service}\n` +
+      `Date : ${dateFmt} à ${heure}\n` +
+      `Départ : ${depart}${arrivee ? '\nArrivée : ' + arrivee : ''}` +
+      `${message ? '\nInfos : ' + message : ''}`;
 
-const body = encodeURIComponent(
-  `Nouvelle réservation Yang Chauffeur\n\n` +
-  `Client : ${prenom} ${nom}\n` +
-  `Tél : ${tel}${email ? '\nEmail : ' + email : ''}\n` +
-  `Service : ${service}\n` +
-  `Date : ${dateFmt} à ${heure}\n` +
-  `Départ : ${depart}${arrivee ? '\nArrivée : ' + arrivee : ''}` +
-  `${message ? '\nInfos : ' + message : ''}`
-);
+    /* ✅ 1. WhatsApp → TON numéro (33753608361) */
+    const waText = encodeURIComponent(texte);
+    setTimeout(() => {
+      window.open(`https://wa.me/33753608361?text=${waText}`, '_blank');
+    }, 300);
 
-// WHATSAPP (TON NUMÉRO)
-setTimeout(() => {
-  window.open(`https://wa.me/33753608361?text=${waText}`, '_blank');
-}, 500);
+    /* ✅ 2. Email → ouvre le client mail avec les infos pré-remplies */
+    const mailSubject = encodeURIComponent(`Réservation Yang Chauffeur — ${prenom} ${nom}`);
+    const mailBody    = encodeURIComponent(texte);
+    setTimeout(() => {
+      window.location.href = `mailto:yangchauffeur@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+    }, 900);
 
-// EMAIL (ouvre le client mail)
-setTimeout(() => {
-  window.location.href = `mailto:azmat.chwt@gmail.com?subject=${subject}&body=${body}`;
-}, 800);
+    /* ✅ 3. Afficher le message de succès */
+    document.getElementById('formContent').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+    document.getElementById('successName').textContent = prenom;
+
+    /* ✅ 4. Bouton "Nouvelle réservation" dans le message de succès */
+    document.getElementById('successName').closest('.form-success')
+      .querySelector('.btn-new-resa')?.remove();
+    const btnNew = document.createElement('button');
+    btnNew.className = 'btn-submit btn-new-resa';
+    btnNew.style.marginTop = '1.5rem';
+    btnNew.textContent = '+ Nouvelle réservation';
+    btnNew.onclick = resetForm;
+    document.getElementById('formSuccess').appendChild(btnNew);
+  }
+
+  /* ── Reset complet du formulaire ── */
+  function resetForm() {
+    /* Vider tous les champs */
+    ['prenom','nom','tel','email','service','date','heure','depart','arrivee','message']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = el.tagName === 'SELECT' ? '' : ''; }
+      });
+    document.getElementById('date').min = new Date().toISOString().split('T')[0];
+
+    /* Retirer sélection des cartes */
+    if (lastSelectedCard) {
+      lastSelectedCard.classList.remove('selected');
+      lastSelectedCard = null;
+    }
+
+    /* Réafficher le formulaire */
+    document.getElementById('formContent').style.display = 'block';
+    document.getElementById('formSuccess').style.display  = 'none';
+
+    /* Scroll vers le formulaire */
+    document.getElementById('reservation').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 </script>
 </body>
 </html>
