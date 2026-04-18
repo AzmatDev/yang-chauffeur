@@ -1082,10 +1082,15 @@
 
       /* Pré-remplir le message uniquement si vide */
       const textarea = document.getElementById('message');
-      if (textarea && messageValue && textarea.value.trim() === '') {
-        textarea.value = messageValue;
-        flashField(textarea);
-      }
+      if (textarea && messageValue) {
+  const isAutoFilled = textarea.dataset.auto === "true";
+
+  if (textarea.value.trim() === '' || isAutoFilled) {
+    textarea.value = messageValue;
+    textarea.dataset.auto = "true";
+    flashField(textarea);
+  }
+}
 
       /* Scroll vers le formulaire */
       document.getElementById('reservation').scrollIntoView({ behavior: 'smooth', block: 'start' });
