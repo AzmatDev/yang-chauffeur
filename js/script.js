@@ -88,12 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
             window.open(`https://wa.me/33753608361?text=${waText}`, '_blank');
         }, 300);
 
-        /* Email → mailto */
-        const mailSubject = encodeURIComponent(`Réservation Yang Chauffeur — ${prenom} ${nom}`);
-        const mailBody    = encodeURIComponent(texte);
-        setTimeout(() => {
-            window.location.href = `mailto:azmat.chwt@gmail.com?subject=${mailSubject}&body=${mailBody}`;
-        }, 900);
+        /* Email → EMAILJS */
+        emailjs.init('WYmm6MdNWyiBpeyCc');
+
+        emailjs.send('service_rvx8dyh', 'template_rnkq2a6', {
+            prenom:  prenom,
+            nom:     nom,
+            tel:     tel,
+            email:   email || '—',
+            service: service,
+            date:    dateFmt,
+            heure:   heure,
+            depart:  depart,
+            arrivee: arrivee || '—',
+            infos:   message || '—'
+        });
 
         /* Message de succès */
         document.getElementById('formContent').style.display = 'none';
