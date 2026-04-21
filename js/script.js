@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
     const textarea = document.getElementById('message');
-    if (textarea && messageValue && textarea.value.trim() === '') {
-    textarea.value = messageValue;
-    flashField(textarea);
-}
+    if (textarea && messageValue) {
+        textarea.value = messageValue;
+        flashField(textarea);
+    }
 
     document.getElementById('reservation').scrollIntoView({ behavior: 'smooth' });
 });
