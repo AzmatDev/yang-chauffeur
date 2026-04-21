@@ -609,3 +609,24 @@ footer {
     .avis-grid { grid-template-columns: 1fr; }
     #services, #fleet, #avis, #reservation, footer { padding: 3rem 1.2rem; }
 }
+/*Page mentions légales*/
+.legal-page {
+    padding: 100px 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.legal-page h1 {
+    margin-bottom: 40px;
+}
+
+.legal-page h2 {
+    margin-top: 30px;
+    color: var(--gold);
+}
+
+.legal-page p {
+    margin-top: 10px;
+    line-height: 1.6;
+    color: #ccc;
+}
